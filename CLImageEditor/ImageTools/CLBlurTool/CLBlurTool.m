@@ -7,6 +7,8 @@
 
 #import "CLBlurTool.h"
 
+@import GoogleMobileAds;
+
 static NSString* const kCLBlurToolNormalIconName = @"nonrmalIconAssetsName";
 static NSString* const kCLBlurToolCircleIconName = @"circleIconAssetsName";
 static NSString* const kCLBlurToolBandIconName = @"bandIconAssetsName";
@@ -37,6 +39,12 @@ typedef NS_ENUM(NSUInteger, CLBlurType)
 @property (nonatomic, strong) UIView *selectedMenu;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+
+@interface CLBlurTool ()<GADInterstitialDelegate>
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
+
 @implementation CLBlurTool
 {
     UIImage *_originalImage;
@@ -54,6 +62,8 @@ typedef NS_ENUM(NSUInteger, CLBlurType)
     
     CLBlurType _blurType;
 }
+
+
 
 #pragma mark-
 
@@ -109,6 +119,10 @@ typedef NS_ENUM(NSUInteger, CLBlurType)
     
     [self setDefaultParams];
     [self sliderDidChange:nil];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
 }
 
 - (void)cleanup
@@ -124,6 +138,9 @@ typedef NS_ENUM(NSUInteger, CLBlurType)
                      completion:^(BOOL finished) {
                          [_menuScroll removeFromSuperview];
                      }];
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
 }
 
 - (void)executeWithCompletionBlock:(void(^)(UIImage *image, NSError *error, NSDictionary *userInfo))completionBlock
@@ -515,6 +532,23 @@ typedef NS_ENUM(NSUInteger, CLBlurType)
             break;
     }
     
+}
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

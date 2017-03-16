@@ -6,11 +6,17 @@
 //
 
 #import "CLAdjustmentTool.h"
+@import GoogleMobileAds;
 
 static NSString* const kCLAdjustmentToolSaturationIconName = @"saturationIconAssetsName";
 static NSString* const kCLAdjustmentToolBrightnessIconName = @"brightnessIconAssetsName";
 static NSString* const kCLAdjustmentToolContrastIconName = @"contrastIconAssetsName";
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLAdjustmentTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLAdjustmentTool
 {
@@ -22,6 +28,8 @@ static NSString* const kCLAdjustmentToolContrastIconName = @"contrastIconAssetsN
     UISlider *_contrastSlider;
     UIActivityIndicatorView *_indicatorView;
 }
+
+
 
 + (NSString*)defaultTitle
 {
@@ -41,6 +49,10 @@ static NSString* const kCLAdjustmentToolContrastIconName = @"contrastIconAssetsN
     [self.editor fixZoomScaleWithAnimated:YES];
     
     [self setupSlider];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
 }
 
 - (void)cleanup
@@ -51,6 +63,10 @@ static NSString* const kCLAdjustmentToolContrastIconName = @"contrastIconAssetsN
     [_contrastSlider.superview removeFromSuperview];
     
     [self.editor resetZoomScaleWithAnimated:YES];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
 }
 
 - (void)executeWithCompletionBlock:(void(^)(UIImage *image, NSError *error, NSDictionary *userInfo))completionBlock
@@ -170,6 +186,24 @@ static NSString* const kCLAdjustmentToolContrastIconName = @"contrastIconAssetsN
     CGImageRelease(cgImage);
     
     return result;
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

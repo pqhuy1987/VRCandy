@@ -10,8 +10,16 @@
 
 #import "CLImageEditor.h"
 
+@import GoogleMobileAds;
+
 @interface ViewController ()
 <CLImageEditorDelegate, CLImageEditorTransitionDelegate, CLImageEditorThemeDelegate>
+@end
+
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface ViewController ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
 @end
 
 @implementation ViewController
@@ -19,6 +27,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
 	
     //Set a black theme rather than a white one
 	/*
@@ -55,12 +67,20 @@
 
 - (void)pushedNewBtn
 {
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera", @"Photo Library", nil];
     [sheet showInView:self.view.window];
 }
 
 - (void)pushedEditBtn
 {
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
     if(_imageView.image){
         CLImageEditor *editor = [[CLImageEditor alloc] initWithImage:_imageView.image delegate:self];
         //CLImageEditor *editor = [[CLImageEditor alloc] initWithDelegate:self];
@@ -89,6 +109,10 @@
 
 - (void)pushedSaveBtn
 {
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
     if(_imageView.image){
         NSArray *excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypeMessage];
         
@@ -161,12 +185,18 @@
     
     switch (item.tag) {
         case 0:
+            [self interstisal];
+            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
             [self pushedNewBtn];
             break;
         case 1:
+            [self interstisal];
+            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
             [self pushedEditBtn];
             break;
         case 2:
+            [self interstisal];
+            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
             [self pushedSaveBtn];
             break;
         default:
@@ -250,6 +280,24 @@
 {
     [self resetImageViewFrame];
     [self resetZoomScaleWithAnimate:NO];
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

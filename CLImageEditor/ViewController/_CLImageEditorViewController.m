@@ -9,8 +9,12 @@
 
 #import "CLImageToolBase.h"
 
+@import GoogleMobileAds;
+
 
 #pragma mark- _CLImageEditorViewController
+
+
 
 @interface _CLImageEditorViewController()
 <CLImageToolProtocol, UINavigationBarDelegate>
@@ -19,6 +23,11 @@
 @property (nonatomic, strong) UIImageView *targetImageView;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface _CLImageEditorViewController ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation _CLImageEditorViewController
 {
@@ -188,6 +197,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
     
     self.title = self.toolInfo.title;
     self.view.clipsToBounds = YES;
@@ -620,6 +632,10 @@
 
 - (IBAction)pushedCancelBtn:(id)sender
 {
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _imageView.image = _originalImage;
     [self resetImageViewFrame];
     
@@ -628,6 +644,10 @@
 
 - (IBAction)pushedDoneBtn:(id)sender
 {
+    [self interstisal];
+    
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     self.view.userInteractionEnabled = NO;
     
     [self.currentTool executeWithCompletionBlock:^(UIImage *image, NSError *error, NSDictionary *userInfo) {
@@ -696,6 +716,24 @@
     rct.origin.x = MAX((Ws-W)/2, 0);
     rct.origin.y = MAX((Hs-H)/2, 0);
     _imageView.frame = rct;
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

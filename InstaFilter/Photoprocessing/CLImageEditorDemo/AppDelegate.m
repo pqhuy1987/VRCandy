@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+@import GoogleMobileAds;
+@import FirebaseAnalytics;
 
 @implementation AppDelegate
 
@@ -26,6 +28,9 @@
     
     [[UINavigationBar appearance] setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
     */
+    
+    [FIRApp configure];
+    [GADMobileAds configureWithApplicationID:@"ca-app-pub-5722562744549789~4434448550"];
     
     return YES;
 }
