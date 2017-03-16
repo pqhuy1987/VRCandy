@@ -6,8 +6,15 @@
 //
 
 #import "CLSplashTool.h"
+@import GoogleMobileAds;
 
 static NSString* const kCLSplashToolEraserIconName = @"eraserIconAssetsName";
+
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLSplashTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLSplashTool
 {
@@ -59,6 +66,9 @@ static NSString* const kCLSplashToolEraserIconName = @"eraserIconAssetsName";
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImageSize = self.editor.imageView.image.size;
     
     _drawingView = [[UIImageView alloc] initWithFrame:self.editor.imageView.bounds];
@@ -94,6 +104,9 @@ static NSString* const kCLSplashToolEraserIconName = @"eraserIconAssetsName";
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [_drawingView removeFromSuperview];
     self.editor.imageView.userInteractionEnabled = NO;
     self.editor.scrollView.panGestureRecognizer.minimumNumberOfTouches = 1;
@@ -284,6 +297,24 @@ static NSString* const kCLSplashToolEraserIconName = @"eraserIconAssetsName";
     UIGraphicsEndImageContext();
     
     return tmp;
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

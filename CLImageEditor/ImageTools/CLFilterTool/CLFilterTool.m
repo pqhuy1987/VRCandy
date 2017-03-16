@@ -8,7 +8,13 @@
 #import "CLFilterTool.h"
 
 #import "CLFilterBase.h"
+@import GoogleMobileAds;
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLFilterTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLFilterTool
 {
@@ -34,6 +40,9 @@
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImage = self.editor.imageView.image;
     
     _menuScroll = [[UIScrollView alloc] initWithFrame:self.editor.menuView.frame];
@@ -52,6 +61,9 @@
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [UIView animateWithDuration:kCLImageToolAnimationDuration
                      animations:^{
                          _menuScroll.transform = CGAffineTransformMakeTranslation(0, self.editor.view.height-_menuScroll.top);
@@ -125,6 +137,24 @@
             return [filterClass applyFilter:image];
         }
         return nil;
+    }
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
     }
 }
 

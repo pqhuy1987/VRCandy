@@ -6,6 +6,7 @@
 //
 
 #import "CLRotateTool.h"
+@import GoogleMobileAds;
 
 static NSString* const kCLRotateToolRotateIconName = @"rotateIconAssetsName";
 static NSString* const kCLRotateToolFlipHorizontalIconName = @"flipHorizontalIconAssetsName";
@@ -22,7 +23,11 @@ static NSString* const kCLRotateToolCropRotate = @"cropRotateEnabled";
 @end
 
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLRotateTool ()<GADInterstitialDelegate>
 
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 
 @implementation CLRotateTool
@@ -71,6 +76,9 @@ static NSString* const kCLRotateToolCropRotate = @"cropRotateEnabled";
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _executed = NO;
 
     _fineRotationEnabled = [self.toolInfo.optionalInfo[kCLRotateToolFineRotationEnabled] boolValue];
@@ -114,6 +122,9 @@ static NSString* const kCLRotateToolCropRotate = @"cropRotateEnabled";
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [_rotateSlider.superview removeFromSuperview];
     [_gridView removeFromSuperview];
     
@@ -346,6 +357,24 @@ static NSString* const kCLRotateToolCropRotate = @"cropRotateEnabled";
     UIImage *croppedImage = [image crop:newFrame];
 
     return croppedImage;
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

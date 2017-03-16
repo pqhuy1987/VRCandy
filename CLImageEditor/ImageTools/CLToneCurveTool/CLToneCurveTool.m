@@ -6,6 +6,7 @@
 //
 
 #import "CLToneCurveTool.h"
+@import GoogleMobileAds;
 
 #import "CLSplineInterpolator.h"
 
@@ -39,6 +40,11 @@ static NSString* const kCLToneCurveToolResetIconName = @"resetIconAssetsName";
 - (void)toneCurveDidChange:(CLToneCurveView*)view;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLToneCurveTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @interface CLToneCurveTool()
 <CLToneCurveGridDelegate>
@@ -80,6 +86,9 @@ static NSString* const kCLToneCurveToolResetIconName = @"resetIconAssetsName";
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImage = self.editor.imageView.image;
     _thumbnailImage = [_originalImage resize:self.editor.imageView.frame.size];
     
@@ -120,6 +129,9 @@ static NSString* const kCLToneCurveToolResetIconName = @"resetIconAssetsName";
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [_indicatorView removeFromSuperview];
     
     [UIView animateWithDuration:kCLImageToolAnimationDuration
@@ -220,6 +232,24 @@ static NSString* const kCLToneCurveToolResetIconName = @"resetIconAssetsName";
     rotation.repeatCount = 1;
     rotation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
     [sender.layer addAnimation:rotation forKey:@"rotationAnimation"];
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

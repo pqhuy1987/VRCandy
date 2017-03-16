@@ -6,6 +6,7 @@
 //
 
 #import "CLClippingTool.h"
+@import GoogleMobileAds;
 
 
 static NSString* const kCLClippingToolRatios = @"ratios";
@@ -47,6 +48,12 @@ static NSString* const kCLClippingToolRatioTitleFormat = @"titleFormat";
 
 @interface CLClippingTool()
 @property (nonatomic, strong) CLRatioMenuItem *selectedMenu;
+@end
+
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLClippingTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
 @end
 
 @implementation CLClippingTool
@@ -144,6 +151,9 @@ static NSString* const kCLClippingToolRatioTitleFormat = @"titleFormat";
                      animations:^{
                          _menuContainer.transform = CGAffineTransformIdentity;
                      }];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
 }
 
 - (void)cleanup
@@ -158,6 +168,9 @@ static NSString* const kCLClippingToolRatioTitleFormat = @"titleFormat";
                      completion:^(BOOL finished) {
                          [_menuContainer removeFromSuperview];
                      }];
+    
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
 }
 
 - (void)executeWithCompletionBlock:(void (^)(UIImage *, NSError *, NSDictionary *))completionBlock
@@ -259,6 +272,26 @@ static NSString* const kCLClippingToolRatioTitleFormat = @"titleFormat";
         [_gridView clippingRatioDidChange];
     }
 }
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
+}
+
+
 
 @end
 

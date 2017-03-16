@@ -7,6 +7,7 @@
 //
 
 #import "CLEmoticonTool.h"
+@import GoogleMobileAds;
 
 #import "CLCircleView.h"
 
@@ -20,7 +21,11 @@ static NSString* const kCLEmoticonToolDeleteIconName = @"deleteIconAssetsName";
 - (void)setScale:(CGFloat)scale;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLEmoticonTool ()<GADInterstitialDelegate>
 
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLEmoticonTool
 {
@@ -70,6 +75,9 @@ static NSString* const kCLEmoticonToolDeleteIconName = @"deleteIconAssetsName";
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImage = self.editor.imageView.image;
     
     [self.editor fixZoomScaleWithAnimated:YES];
@@ -94,6 +102,9 @@ static NSString* const kCLEmoticonToolDeleteIconName = @"deleteIconAssetsName";
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [self.editor resetZoomScaleWithAnimated:YES];
     
     [_workingView removeFromSuperview];
@@ -191,6 +202,23 @@ static NSString* const kCLEmoticonToolDeleteIconName = @"deleteIconAssetsName";
     return tmp;
 }
 
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
+}
 @end
 
 

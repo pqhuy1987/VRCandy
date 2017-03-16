@@ -8,6 +8,7 @@
 #import "CLStickerTool.h"
 
 #import "CLCircleView.h"
+@import GoogleMobileAds;
 
 static NSString* const kCLStickerToolStickerPathKey = @"stickerPath";
 static NSString* const kCLStickerToolDeleteIconName = @"deleteIconAssetsName";
@@ -19,7 +20,11 @@ static NSString* const kCLStickerToolDeleteIconName = @"deleteIconAssetsName";
 - (void)setScale:(CGFloat)scale;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLStickerTool ()<GADInterstitialDelegate>
 
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLStickerTool
 {
@@ -69,6 +74,9 @@ static NSString* const kCLStickerToolDeleteIconName = @"deleteIconAssetsName";
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImage = self.editor.imageView.image;
     
     [self.editor fixZoomScaleWithAnimated:YES];
@@ -93,6 +101,9 @@ static NSString* const kCLStickerToolDeleteIconName = @"deleteIconAssetsName";
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [self.editor resetZoomScaleWithAnimated:YES];
     
     [_workingView removeFromSuperview];
@@ -190,6 +201,23 @@ static NSString* const kCLStickerToolDeleteIconName = @"deleteIconAssetsName";
     return tmp;
 }
 
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
+}
 @end
 
 

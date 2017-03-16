@@ -6,8 +6,15 @@
 //
 
 #import "CLDrawTool.h"
+@import GoogleMobileAds;
 
 static NSString* const kCLDrawToolEraserIconName = @"eraserIconAssetsName";
+
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLDrawTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLDrawTool
 {
@@ -24,6 +31,8 @@ static NSString* const kCLDrawToolEraserIconName = @"eraserIconAssetsName";
     
     CLToolbarMenuItem *_colorBtn;
 }
+
+
 
 + (NSArray*)subtools
 {
@@ -86,6 +95,8 @@ static NSString* const kCLDrawToolEraserIconName = @"eraserIconAssetsName";
                          _menuView.transform = CGAffineTransformIdentity;
                      }];
     
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
 }
 
 - (void)cleanup
@@ -101,6 +112,9 @@ static NSString* const kCLDrawToolEraserIconName = @"eraserIconAssetsName";
                      completion:^(BOOL finished) {
                          [_menuView removeFromSuperview];
                      }];
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    
 }
 
 - (void)executeWithCompletionBlock:(void (^)(UIImage *, NSError *, NSDictionary *))completionBlock
@@ -345,6 +359,24 @@ static NSString* const kCLDrawToolEraserIconName = @"eraserIconAssetsName";
     UIGraphicsEndImageContext();
     
     return tmp;
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
+    }
 }
 
 @end

@@ -6,13 +6,18 @@
 //
 
 #import "CLEffectTool.h"
-
+@import GoogleMobileAds;
 
 @interface CLEffectTool()
 @property (nonatomic, strong) UIView *selectedMenu;
 @property (nonatomic, strong) CLEffectBase *selectedEffect;
 @end
 
+#define ADID @"ca-app-pub-5722562744549789/5911181754"
+@interface CLEffectTool ()<GADInterstitialDelegate>
+
+@property (nonatomic, strong) GADInterstitial *interstitial;
+@end
 
 @implementation CLEffectTool
 {
@@ -42,6 +47,9 @@
 
 - (void)setup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     _originalImage = self.editor.imageView.image;
     _thumbnailImage = [_originalImage resize:self.editor.imageView.frame.size];
     
@@ -63,6 +71,9 @@
 
 - (void)cleanup
 {
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
     [self.selectedEffect cleanup];
     [_indicatorView removeFromSuperview];
     
@@ -75,6 +86,7 @@
                      completion:^(BOOL finished) {
                          [_menuScroll removeFromSuperview];
                      }];
+    
 }
 
 - (void)executeWithCompletionBlock:(void(^)(UIImage *image, NSError *error, NSDictionary *userInfo))completionBlock
@@ -184,6 +196,24 @@
             [self buildThumbnailImage];
             inProgress = NO;
         });
+    }
+}
+
+-(void)interstisal{
+    self.interstitial = [[GADInterstitial alloc] initWithAdUnitID:ADID];
+    
+    self.interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    
+    [self.interstitial loadRequest:request];
+    
+}
+
+-(void)LoadInterstitialAds{
+    
+    if (self.interstitial.isReady) {
+        [self.interstitial presentFromRootViewController:self];
     }
 }
 
