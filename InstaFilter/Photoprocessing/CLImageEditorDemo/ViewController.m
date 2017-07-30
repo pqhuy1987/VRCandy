@@ -9,12 +9,19 @@
 #import "ViewController.h"
 
 #import "CLImageEditor.h"
+#import "Removeads.h"
 
 @import GoogleMobileAds;
 
 @interface ViewController ()
 <CLImageEditorDelegate, CLImageEditorTransitionDelegate, CLImageEditorThemeDelegate>
+@property (weak, nonatomic) IBOutlet GADBannerView *bannerView;
+@property (weak, nonatomic) IBOutlet GADBannerView *bannerView2;
+
+
 @end
+
+#define kRemoveAdsProductIdentifier @"com.gamming.jeju.100.removeads"
 
 #define ADID @"ca-app-pub-5722562744549789/5911181754"
 @interface ViewController ()<GADInterstitialDelegate>
@@ -27,11 +34,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     
-    [self interstisal];
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    areAdsRemoved = [defaults boolForKey:kRemoveAdsProductIdentifier];
+    if (areAdsRemoved){
+        ;
+    } else {
+        self.bannerView.adUnitID = @"ca-app-pub-5722562744549789/4221694555";
+        self.bannerView.rootViewController = self;
+        [self.bannerView loadRequest:[GADRequest request]];
+        
+        self.bannerView2.adUnitID = @"ca-app-pub-5722562744549789/9839106822";
+        self.bannerView2.rootViewController = self;
+        [self.bannerView2 loadRequest:[GADRequest request]];
+
+ 
+        [self interstisal];
     
-    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
-	
+        [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+        
+    }
     //Set a black theme rather than a white one
 	/*
     [[CLImageEditorTheme theme] setBackgroundColor:[UIColor blackColor]];
@@ -67,9 +90,11 @@
 
 - (void)pushedNewBtn
 {
-    [self interstisal];
-    
-    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    if (areAdsRemoved) {
+    } else {
+        [self interstisal];
+        [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    }
     
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera", @"Photo Library", nil];
     [sheet showInView:self.view.window];
@@ -77,10 +102,11 @@
 
 - (void)pushedEditBtn
 {
-    [self interstisal];
-    
-    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
-    
+    if (areAdsRemoved) {
+    } else {
+        [self interstisal];
+        [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    }
     if(_imageView.image){
         CLImageEditor *editor = [[CLImageEditor alloc] initWithImage:_imageView.image delegate:self];
         //CLImageEditor *editor = [[CLImageEditor alloc] initWithDelegate:self];
@@ -109,10 +135,11 @@
 
 - (void)pushedSaveBtn
 {
-    [self interstisal];
-    
-    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
-    
+    if (areAdsRemoved) {
+    } else {
+        [self interstisal];
+        [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+    }
     if(_imageView.image){
         NSArray *excludedActivityTypes = @[UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypeMessage];
         
@@ -185,19 +212,31 @@
     
     switch (item.tag) {
         case 0:
-            [self interstisal];
-            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
+            if (areAdsRemoved) {
+            } else {
+                [self interstisal];
+                [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+            }
             [self pushedNewBtn];
             break;
         case 1:
-            [self interstisal];
-            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
+            if (areAdsRemoved) {
+            } else {
+                [self interstisal];
+                [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+            }
             [self pushedEditBtn];
             break;
         case 2:
-            [self interstisal];
-            [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:0.5];
+            if (areAdsRemoved) {
+            } else {
+                [self interstisal];
+                [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+            }
             [self pushedSaveBtn];
+            break;
+        case 3:
+            [self tapsRemoveAds];
             break;
         default:
             break;
@@ -298,6 +337,134 @@
     if (self.interstitial.isReady) {
         [self.interstitial presentFromRootViewController:self];
     }
+}
+
+//Add IAP in this project
+//If you have more than one in-app purchase, you can define both of
+//of them here. So, for example, you could define both kRemoveAdsProductIdentifier
+//and kBuyCurrencyProductIdentifier with their respective product ids
+//
+//for this example, we will only use one product
+
+
+- (IBAction)tapsRemoveAds{
+    NSLog(@"User requests to remove ads");
+    
+    if([SKPaymentQueue canMakePayments]){
+        NSLog(@"User can make payments");
+        
+        //If you have more than one in-app purchase, and would like
+        //to have the user purchase a different product, simply define
+        //another function and replace kRemoveAdsProductIdentifier with
+        //the identifier for the other product
+        
+        SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:kRemoveAdsProductIdentifier]];
+        productsRequest.delegate = self;
+        [productsRequest start];
+        
+    }
+    else{
+        NSLog(@"User cannot make payments due to parental controls");
+        //this is called the user cannot make payments, most likely due to parental controls
+    }
+}
+
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
+    SKProduct *validProduct = nil;
+    int count = [response.products count];
+    if(count > 0){
+        validProduct = [response.products objectAtIndex:0];
+        NSLog(@"Products Available!");
+        [self purchase:validProduct];
+    }
+    else if(!validProduct){
+        NSLog(@"No products available");
+        //this is called if your product id is not valid, this shouldn't be called unless that happens.
+    }
+}
+
+- (void)purchase:(SKProduct *)product{
+    SKPayment *payment = [SKPayment paymentWithProduct:product];
+    
+    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    [[SKPaymentQueue defaultQueue] addPayment:payment];
+}
+
+- (IBAction) restore{
+    //this is called when the user restores purchases, you should hook this up to a button
+    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
+- (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
+{
+    NSLog(@"received restored transactions: %i", queue.transactions.count);
+    for(SKPaymentTransaction *transaction in queue.transactions){
+        if(transaction.transactionState == SKPaymentTransactionStateRestored){
+            //called when the user successfully restores a purchase
+            NSLog(@"Transaction state -> Restored");
+            
+            //if you have more than one in-app purchase product,
+            //you restore the correct product for the identifier.
+            //For example, you could use
+            //if(productID == kRemoveAdsProductIdentifier)
+            //to get the product identifier for the
+            //restored purchases, you can use
+            //
+            //NSString *productID = transaction.payment.productIdentifier;
+            [self doRemoveAds];
+            [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+            break;
+        }
+    }
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{
+    for(SKPaymentTransaction *transaction in transactions){
+        //if you have multiple in app purchases in your app,
+        //you can get the product identifier of this transaction
+        //by using transaction.payment.productIdentifier
+        //
+        //then, check the identifier against the product IDs
+        //that you have defined to check which product the user
+        //just purchased
+        
+        switch(transaction.transactionState){
+            case SKPaymentTransactionStatePurchasing: NSLog(@"Transaction state -> Purchasing");
+                //called when the user is in the process of purchasing, do not add any of your own code here.
+                break;
+            case SKPaymentTransactionStatePurchased:
+                //this is called when the user has successfully purchased the package (Cha-Ching!)
+                [self doRemoveAds]; //you can add your code for what you want to happen when the user buys the purchase here, for this tutorial we use removing ads
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                NSLog(@"Transaction state -> Purchased");
+                break;
+            case SKPaymentTransactionStateRestored:
+                NSLog(@"Transaction state -> Restored");
+                //add the same code as you did from SKPaymentTransactionStatePurchased here
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateFailed:
+                //called when the transaction does not finish
+                if(transaction.error.code == SKErrorPaymentCancelled){
+                    NSLog(@"Transaction state -> Cancelled");
+                    //the user cancelled the payment ;(
+                }
+                [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                break;
+        }
+    }
+}
+
+- (void)doRemoveAds{
+    self.bannerView.hidden = true;
+    self.bannerView2.hidden = true;
+    areAdsRemoved = YES;
+    //set the bool for whether or not they purchased it to YES, you could use your own boolean here, but you would have to declare it in your .h file
+    
+    [[NSUserDefaults standardUserDefaults] setBool:areAdsRemoved forKey:@"com.gamming.jeju.100.removeads"];
+    //use NSUserDefaults so that you can load wether or not they bought it
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end

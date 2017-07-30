@@ -15,7 +15,7 @@
 
 @interface CLImageEditor : UIViewController
 {
-    
+
 }
 @property (nonatomic, weak) id<CLImageEditorDelegate> delegate;
 @property (nonatomic, readonly) CLImageEditorTheme *theme;
