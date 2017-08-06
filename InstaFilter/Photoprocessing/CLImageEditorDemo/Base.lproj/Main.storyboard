@@ -26,6 +26,7 @@
                                     <tabBarItem tag="1" title="Edit" image="edit" id="J0F-q1-dck"/>
                                     <tabBarItem tag="2" title="Save" image="save" id="Tj3-jb-mWS"/>
                                     <tabBarItem tag="3" title="Remove ads" image="ads" id="Sit-cm-aBh"/>
+                                    <tabBarItem tag="4" title="Restore" image="restore" id="o0w-lB-8eG"/>
                                 </items>
                                 <connections>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="2lu-G8-dQC"/>
@@ -82,6 +83,7 @@
         <image name="default.jpg" width="1280" height="2000"/>
         <image name="edit" width="30" height="30"/>
         <image name="new" width="30" height="30"/>
+        <image name="restore" width="30" height="30"/>
         <image name="save" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

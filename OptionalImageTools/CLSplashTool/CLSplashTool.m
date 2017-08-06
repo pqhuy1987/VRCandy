@@ -66,11 +66,10 @@ static NSString* const kCLSplashToolEraserIconName = @"eraserIconAssetsName";
 
 - (void)setup
 {
-    if (areAdsRemoved) {
-    } else {
-        [self interstisal];
-        [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
-    }
+
+    [self interstisal];
+    [self performSelector:@selector(LoadInterstitialAds) withObject:self afterDelay:1.0];
+
 
     _originalImageSize = self.editor.imageView.image.size;
     

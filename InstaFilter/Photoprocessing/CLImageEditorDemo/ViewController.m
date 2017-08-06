@@ -45,7 +45,7 @@
         self.bannerView.rootViewController = self;
         [self.bannerView loadRequest:[GADRequest request]];
         
-        self.bannerView2.adUnitID = @"ca-app-pub-5722562744549789/9839106822";
+        self.bannerView2.adUnitID = @"ca-app-pub-5722562744549789/4221694555";
         self.bannerView2.rootViewController = self;
         [self.bannerView2 loadRequest:[GADRequest request]];
 
@@ -237,6 +237,9 @@
             break;
         case 3:
             [self tapsRemoveAds];
+            break;
+        case 4:
+            [self restore];
             break;
         default:
             break;

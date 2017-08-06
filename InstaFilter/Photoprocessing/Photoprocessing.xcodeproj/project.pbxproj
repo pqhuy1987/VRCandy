@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		120FF0971F2E3D0E006AE66B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 120FF0961F2E3D0E006AE66B /* StoreKit.framework */; };
 		1232139B1E79ACB300463905 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1232139A1E79ACB300463905 /* GoogleService-Info.plist */; };
-		127676EB1F29F2CF000EF6C7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 127676EA1F29F2CF000EF6C7 /* StoreKit.framework */; };
 		44DA61A6CC1F2FDCC76C1790 /* libPods-Photoprocessing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 550A250E6796C39CF50B7512 /* libPods-Photoprocessing.a */; };
 		AD1D2C6B1897538900752339 /* CLGPUImageVignetteFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = AD1D2C6A1897538900752339 /* CLGPUImageVignetteFilter.m */; };
 		AD29BB5D18EA471A0084D3D6 /* CLEmoticonTool.m in Sources */ = {isa = PBXBuildFile; fileRef = AD29BB5C18EA471A0084D3D6 /* CLEmoticonTool.m */; };
@@ -70,8 +70,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		120FF0961F2E3D0E006AE66B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		1232139A1E79ACB300463905 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		127676EA1F29F2CF000EF6C7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		127676EC1F29F5A6000EF6C7 /* Removeads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Removeads.h; path = ../Removeads.h; sourceTree = "<group>"; };
 		550A250E6796C39CF50B7512 /* libPods-Photoprocessing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Photoprocessing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB4ABA109E5A5BD4DF5BE4E2 /* Pods-Photoprocessing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Photoprocessing.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Photoprocessing/Pods-Photoprocessing.debug.xcconfig"; sourceTree = "<group>"; };
@@ -193,8 +193,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				127676EB1F29F2CF000EF6C7 /* StoreKit.framework in Frameworks */,
 				AD85D68918457394003106A3 /* CoreImage.framework in Frameworks */,
+				120FF0971F2E3D0E006AE66B /* StoreKit.framework in Frameworks */,
 				AD85D68718457388003106A3 /* Accelerate.framework in Frameworks */,
 				AD5C1E0618350DC400790989 /* CoreGraphics.framework in Frameworks */,
 				AD5C1E0818350DC400790989 /* UIKit.framework in Frameworks */,
@@ -480,7 +480,7 @@
 		AD5C1E0218350DC400790989 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				127676EA1F29F2CF000EF6C7 /* StoreKit.framework */,
+				120FF0961F2E3D0E006AE66B /* StoreKit.framework */,
 				AD85D68818457394003106A3 /* CoreImage.framework */,
 				AD85D68618457388003106A3 /* Accelerate.framework */,
 				AD5C1E0318350DC400790989 /* Foundation.framework */,
@@ -572,6 +572,11 @@
 					AD5C1DFF18350DC400790989 = {
 						DevelopmentTeam = 4BLWLFDFU8;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
